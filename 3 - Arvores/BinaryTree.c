@@ -11,7 +11,7 @@ struct Node *CriarNode(int valor) {
   struct Node *NovoNode = (struct Node *)malloc(sizeof(struct Node));
 
   if (NovoNode == NULL) {
-    printf("Erro ao criar novo nó");
+    printf("Erro ao criar novo nó \n");
     exit(1);
   }
 
@@ -46,8 +46,8 @@ struct Node *Inserir(struct Node *raiz, int valor) {
 struct Node *Pesquisar(struct Node *raiz, int valor) {
   struct Node *Pesquisado = raiz;
   if (raiz == NULL) {
-    printf("Arvore não existe");
-    exit(1);
+    printf("Arvore não existe \n");
+    return NULL;
   }
   while (Pesquisado != NULL) {
     if (Pesquisado->info == valor) {
@@ -59,14 +59,14 @@ struct Node *Pesquisar(struct Node *raiz, int valor) {
       Pesquisado = Pesquisado->esquerda;
     }
   }
+  printf("O nó de valor %d não foi encontrado \n", valor);
   return Pesquisado;
 }
 
 struct Node *Deletar(struct Node *raiz, int valor) {
-  struct Node *Deletado = raiz;
   if (raiz == NULL) {
-    printf("Arvore não existe");
-    exit(1);
+    printf("Arvore não existe \n");
+    return NULL;
   }
 
   if (valor < raiz->info) {
@@ -74,22 +74,23 @@ struct Node *Deletar(struct Node *raiz, int valor) {
   } else if (valor > raiz->info) {
     raiz->direita = Deletar(raiz->direita, valor);
   } else {
-    struct Node *tmp;
-
     if (raiz->direita == NULL) {
-      tmp = raiz->esquerda;
-      free(tmp);
-      //printf("Deletou \n");
+      struct Node *tmp = raiz->esquerda;
+      free(raiz);
+      printf("o nó com valor %i foi deletado \n", valor);
+      return tmp;
     } else if (raiz->esquerda == NULL) {
-      tmp = raiz->direita;
-      free(tmp);
-      //printf("Deletou 2 \n");
+      struct Node *tmp = raiz->direita;
+      free(raiz);
+      printf("o nó com valor %i foi deletado \n", valor);
+      return tmp;
     } else {
-      tmp = encontrarMinimo(raiz->direita);
+      struct Node *tmp = encontrarMinimo(raiz->direita);
       raiz->info = tmp->info;
       raiz->direita = Deletar(raiz->direita, tmp->info);
-      //printf("Deletou 3 \n");
+      printf("o nó com valor %i foi deletado \n", valor);
     }
+    printf("Não foi encontrado o nó com valor %i para ser deletado \n", valor);
   }
   return raiz;
 }
@@ -97,16 +98,26 @@ struct Node *Deletar(struct Node *raiz, int valor) {
 int main(void) {
   struct Node *raiz = NULL;
 
-  int qntd;
+  int qntd, valor, pesquisar, deletar;
 
   printf("Quantos nós você quer inserir: ");
   scanf("%i", &qntd);
 
   for (int i = 0; i < qntd; i++) {
-    raiz = Inserir(raiz, i + 1);
+    printf("Qual o valor do nó n°%i: ", i + 1);
+    scanf("%i", &valor);
+    raiz = Inserir(raiz, valor);
   }
 
-  Pesquisar(raiz, 3);
-  Deletar(raiz, 10);
+  printf("Qual nó você deseja pesquisar: ");
+  scanf("%i", &pesquisar);
+
+  Pesquisar(raiz, pesquisar);
+
+  printf("Qual nó você deseja deletar: ");
+  scanf("%i", &deletar);
+
+  Deletar(raiz, deletar);
+
   return 0;
 }
