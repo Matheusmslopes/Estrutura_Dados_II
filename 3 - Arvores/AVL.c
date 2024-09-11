@@ -1,11 +1,13 @@
+/* Nome: Matheus Muruci de Souza Lopes*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node{
-  int info;
-  int altura;
-  struct Node *esquerda;
-  struct Node *direita;
+struct Node {
+    int info;
+    int altura;
+    struct Node *esquerda;
+    struct Node *direita;
 };
 
 typedef struct Node *AVL;
@@ -16,56 +18,51 @@ typedef struct Node *AVL;
 
 // Função para criar uma nova árvore
 AVL *CriarAVL() {
-  AVL *raiz = (AVL *)malloc(sizeof(AVL));
+    AVL *raiz = (AVL *)malloc(sizeof(AVL));
 
-  if (raiz != NULL)
-    *raiz = NULL;
+    if (raiz != NULL)
+        *raiz = NULL;
 
-  return raiz;
+    return raiz;
 }
 
 // Função para criar um novo nó
 struct Node *CriarNode(int valor) {
-  struct Node *novoNode = (struct Node *)malloc(sizeof(struct Node));
+    struct Node *novoNode = (struct Node *)malloc(sizeof(struct Node));
 
-  if (novoNode == NULL) {
-    printf("Erro ao criar novo nó \n");
-    return NULL;
-  }
+    if (novoNode == NULL) {
+        printf("Erro ao criar novo nó \n");
+        return NULL;
+    }
 
-  novoNode->info = valor;
-  novoNode->direita = NULL;
-  novoNode->esquerda = NULL;
-  novoNode->altura = 0;
+    novoNode->info = valor;
+    novoNode->direita = NULL;
+    novoNode->esquerda = NULL;
+    novoNode->altura = 0;
 
-  return novoNode;
+    return novoNode;
 }
 
 /*=====================================================================
                              Verificação
 ======================================================================*/
 
-int AlturaNode(struct Node *node){
-  if (node == NULL)
-    return -1;
-  else
-    return node->altura;
+int AlturaNode(struct Node *node) {
+    if (node == NULL)
+        return 0;
+    else
+        return node->altura;
 }
 
-int FatorBalanceamento(struct Node *node){
-  if (node == NULL){
-    return 0;
-  }
-  return (AlturaNode(node->esquerda) - AlturaNode(node->direita));
+int FatorBalanceamento(struct Node *node) {
+    if (node == NULL) {
+        return 0;
+    }
+    return (AlturaNode(node->esquerda) - AlturaNode(node->direita));
 }
 
-int AlturaMaxima(int altura1, int altura2){
-  if (altura1 > altura2){
-    return altura1;
-  } 
-  else {
-    return altura2;
-  }
+int AlturaMaxima(int altura1, int altura2) {
+    return (altura1 > altura2) ? altura1 : altura2;
 }
 
 // Função para encontrar o nó com o menor valor da subarvore(Nesse caso ta pegando o valor mais a esquerda da subarvore a direita)
@@ -91,156 +88,151 @@ struct Node *EncontrarMaior(struct Node *raiz) {
 ======================================================================*/
 
 struct Node *RotacaoSimplesEsquerda(struct Node *node) {
-  struct Node *auxiliar;
+     struct Node *auxiliar;
 
-  auxiliar = node->direita;
-  node->direita = auxiliar->esquerda;
-  auxiliar->esquerda = node;
+    auxiliar = node->direita;
+    node->direita = auxiliar->esquerda;
+    auxiliar->esquerda = node;
+    
+    node->altura = AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita)) + 1;
+    auxiliar->altura = AlturaMaxima(AlturaNode(auxiliar->direita), AlturaNode(auxiliar->esquerda)) + 1;
 
-  node->altura = AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita)) + 1;
-  auxiliar->altura = AlturaMaxima(AlturaNode(auxiliar->direita), node->altura) + 1;
-
-  return auxiliar;
+    return auxiliar;
 }
 
 struct Node *RotacaoSimplesDireita(struct Node *node) {
-  struct Node *auxiliar;
+    struct Node *auxiliar;
 
-  auxiliar = node->esquerda;
-  node->esquerda = auxiliar->direita;
-  auxiliar->direita = node;
+    auxiliar = node->esquerda;
+    node->esquerda = auxiliar->direita;
+    auxiliar->direita = node;
 
-  node->altura = AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita)) + 1;
-  auxiliar->altura = AlturaMaxima(node->altura, AlturaNode(auxiliar->esquerda)) + 1;
+    node->altura = AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita)) + 1;
+    auxiliar->altura = AlturaMaxima(AlturaNode(auxiliar->esquerda), node->altura) + 1;
 
-  return auxiliar;
+    return auxiliar;
 }
 
 struct Node *RotacaoLR(struct Node *node) {
-  node->esquerda = RotacaoSimplesEsquerda(node->esquerda);
-  return RotacaoSimplesDireita(node);
+    node->esquerda = RotacaoSimplesEsquerda(node->esquerda);
+    return RotacaoSimplesDireita(node);
 }
 
 struct Node *RotacaoRL(struct Node *node) {
-  node->direita = RotacaoSimplesDireita(node->direita);
-  return RotacaoSimplesEsquerda(node);
+    node->direita = RotacaoSimplesDireita(node->direita);
+    return RotacaoSimplesEsquerda(node);
 }
 
 /*=====================================================================
                             Inserção
 ======================================================================*/
 
-struct Node *Inserir(struct Node *node, int valor){
-  // Inserção
-  if (node == NULL){
-    return CriarNode(valor);
-  }
+struct Node *Inserir(struct Node *node, int valor) {
+    // Inserção
+    if (node == NULL) {
+        return CriarNode(valor);
+    }
 
-  if (valor == node->info){
-    return node;
-  } 
-  else if (valor < node->info) {
-    node->esquerda = Inserir(node->esquerda, valor);
-  }
-  else {
-    node->direita = Inserir(node->direita, valor);
-  }
+    if (valor < node->info) {
+        node->esquerda = Inserir(node->esquerda, valor);
+    } else if (valor > node->info) {
+        node->direita = Inserir(node->direita, valor);
+    } else {
+        return node;
+    }
 
-  // Balanceamento
-   node->altura = AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita)) + 1;
+    // Atualiza a altura do nó pai
+    node->altura = AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita)) + 1;
 
+    // Balanceamento
     int fatorBalanceamentoNode = FatorBalanceamento(node);
 
-    if (fatorBalanceamentoNode > 1) {
-      if (node->info < node->esquerda->info)
-        return RotacaoSimplesEsquerda(node);
-      else
-        return RotacaoLR(node);
-    } else if (fatorBalanceamentoNode < -1) {
-      if (node->info > node->direita->info)
+    if (fatorBalanceamentoNode > 1 && valor < node->esquerda->info) {
         return RotacaoSimplesDireita(node);
-      else
+    }
+    if (fatorBalanceamentoNode < -1 && valor > node->direita->info) {
+        return RotacaoSimplesEsquerda(node);
+    }
+    if (fatorBalanceamentoNode > 1 && valor > node->esquerda->info) {
+        return RotacaoLR(node);
+    }
+    if (fatorBalanceamentoNode < -1 && valor < node->direita->info) {
         return RotacaoRL(node);
     }
 
     return node;
-//}
 }
 
 /*=====================================================================
                             Remoção
 ======================================================================*/
 
-struct Node *RemoverNode(struct Node *node) {
-  struct Node *auxiliar;
-
-  if (node->esquerda == NULL)
-    auxiliar = node->direita;
-  else {
-    auxiliar = EncontrarMaior(node->esquerda);
-
-    if (node->direita != NULL) {
-      struct Node *auxiliar2 = node->esquerda;
-
-      if (auxiliar != auxiliar2) {
-        auxiliar2->direita = auxiliar->esquerda;
-        auxiliar->esquerda = auxiliar2;
-      }
-
-      auxiliar->direita = node->direita;
+struct Node *Deletar(struct Node *node, int valor) {
+    // Caso base
+    if (node == NULL) {
+        return node;
     }
-  }
 
-  free(node);
-  return auxiliar;
-}
+    if (valor < node->info) {
+        node->esquerda = Deletar(node->esquerda, valor);
+    } else if (valor > node->info) {
+        node->direita = Deletar(node->direita, valor);
+    } else {
+        // Nó com um ou nenhum filho
+        if ((node->esquerda == NULL) || (node->direita == NULL)) {
+            struct Node *auxiliar;
 
-struct Node *Deletar(struct Node *node, int valor){
-  // Remoção
-  if (valor < node->info)
-    node->esquerda = Deletar(node->esquerda, valor);
-  else if (valor > node->info)
-    node->direita = Deletar(node->direita, valor);
-  else
-    return RemoverNode(node);
+            if (node->esquerda != NULL) {
+                auxiliar = node->esquerda;
+            } else {
+                auxiliar = node->direita;
+            }
+            
+            if (auxiliar == NULL) {
+                auxiliar = node;
+                node = NULL;
+            } else {
+                *node = *auxiliar;
+            }
+            free(auxiliar);
+        } else {
+            // Nó com dois filhos: pegar o sucessor (menor da subárvore à direita)
+            struct Node *auxiliar = EncontrarMenor(node->direita);
+            
 
-  // Balanceamento a cada remoção
-  node->altura = AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita)) + 1;
+            node->info = auxiliar->info;
 
-  int fatorBalanceamentoNode = FatorBalanceamento(node);
+            node->direita = Deletar(node->direita, auxiliar->info);
+        }
+    }
 
-  if (fatorBalanceamentoNode > 1) {
-    if (node->info < node->esquerda->info)
-      return RotacaoSimplesEsquerda(node);
-    else
-      return RotacaoLR(node);
-  } else if (fatorBalanceamentoNode < -1) {
-    if (node->info > node->direita->info)
-      return RotacaoSimplesEsquerda(node);
-    else
-      return RotacaoRL(node);
-  }
+    if (node == NULL) {
+        return node;
+    }
 
-  return node;
-}
+    // Atualizar a altura do nó
+    node->altura = 1 + AlturaMaxima(AlturaNode(node->esquerda), AlturaNode(node->direita));
 
-/*=====================================================================
-                            Busca
-======================================================================*/
+    // Balancear o nó
+    int fatorBalanceamentoNode = FatorBalanceamento(node);
 
-struct Node *Pesquisar(struct Node *node, int valor){
-  if (node == NULL)
+    if (fatorBalanceamentoNode > 1 && FatorBalanceamento(node->esquerda) >= 0) {
+        return RotacaoSimplesDireita(node);
+    }
+
+    if (fatorBalanceamentoNode > 1 && FatorBalanceamento(node->esquerda) < 0) {
+        return RotacaoLR(node);
+    }
+
+    if (fatorBalanceamentoNode < -1 && FatorBalanceamento(node->direita) <= 0) {
+        return RotacaoSimplesEsquerda(node);
+    }
+
+    if (fatorBalanceamentoNode < -1 && FatorBalanceamento(node->direita) > 0) {
+        return RotacaoRL(node);
+    }
+
     return node;
-
-  if (node == valor){
-    return node;
-  }
-  else if (valor < node->info){
-    return Pesquisar(node->esquerda, valor);
-  }
-  else{
-    return Pesquisar(node->direita, valor);
-  }
 }
 
 /*=====================================================================
@@ -252,23 +244,17 @@ Node *a, int b) foram pegas diretamente do diretório original do professor Gust
 (https://github.com/gnrochabr/Estrutura_Dados_II/blob/main/3%20-%20Arvores/BinaryTree.c),
 servindo apenas com o intuito de mostrar a árvore. Na função void mostraArvore(struct Node *a, int b) Foram realizadas apenas mudanças para adequar o nome de uma variável e da struct.*/
 
-// Função auxiliar para imprimir um caractere precedido por uma quantidade específica de espaços
-void imprimeNo(int c, int b){
-    int i;
-    for (i = 0; i < b; i++) // Loop para imprimir espaços proporcionais à profundidade
+void imprimeNo(int c, int b) {
+    for (int i = 0; i < b; i++) {
         printf("   ");
-    printf("%i\n", c); // Imprime o valor do nó com a devida indentação
+    }
+    printf("%i\n", c);
 }
 
-// Função para exibir a árvore no formato esquerda-raiz-direita segundo Sedgewick
-void mostraArvore(struct Node *a, int b){
-    if (a != NULL) // Verifica se o nó atual não é nulo
-    {
-        // Chama a função recursivamente para percorrer a subárvore direita
+void mostraArvore(struct Node *a, int b) {
+    if (a != NULL) {
         mostraArvore(a->direita, b + 1);
-        // Imprime o nó atual com um espaçamento proporcional à sua profundidade
         imprimeNo(a->info, b);
-        // Chama a função recursivamente para percorrer a subárvore esquerda
         mostraArvore(a->esquerda, b + 1);
     }
 }
@@ -277,29 +263,27 @@ void mostraArvore(struct Node *a, int b){
                             Main
 ======================================================================*/
 
-int main(){
-  AVL *raizAVL = CriarAVL();
+int main() {
+    AVL *raizAVL = CriarAVL();
 
-  int vetor[6] = {30, 9, 45, 27, 3, 18};
+    int vetor[12] = {30, 24, 20, 35, 27, 33, 38, 25, 22, 34, 40, 29};
 
-  //int vetor[12] = {30, 24, 20, 35, 27, 33, 38, 25, 22, 34, 40, 29};
+    for (int i = 0; i < 12; i++) {
+        *raizAVL = Inserir(*raizAVL, vetor[i]);
+    }
 
-  for (int i = 0; i < 6; i++) {
-    *raizAVL = Inserir(*raizAVL, vetor[i]);
-  }
-  
-  printf("\nÁrvore Original:\n\n");
-  mostraArvore(*raizAVL, 0);
+    printf("\nÁrvore Original:\n\n");
+    mostraArvore(*raizAVL, 0);
 
-  *raizAVL = Deletar(*raizAVL, 30);
+    *raizAVL = Deletar(*raizAVL, 30);
 
-  printf("\ndepois da remoção do 30:\n\n");
-  mostraArvore(*raizAVL, 0);
+    printf("\nDepois da remoção do 30:\n\n");
+    mostraArvore(*raizAVL, 0);
 
-  *raizAVL = Deletar(*raizAVL, 27);
+    *raizAVL = Deletar(*raizAVL, 27);
 
-  printf("\ndepois da remoção do 27:\n\n");
-  mostraArvore(*raizAVL, 0);
+    printf("\nDepois da remoção do 27:\n\n");
+    mostraArvore(*raizAVL, 0);
 
-  return 0;
+    return 0;
 }
