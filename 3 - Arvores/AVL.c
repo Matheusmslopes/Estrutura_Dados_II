@@ -1,4 +1,4 @@
-/* Nome: Matheus Muruci de Souza Lopes*/
+/* Nome: Matheus Muruci de Souza Lopes */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,7 +49,7 @@ struct Node *CriarNode(int valor) {
 
 int AlturaNode(struct Node *node) {
     if (node == NULL)
-        return 0;
+        return -1;
     else
         return node->altura;
 }
@@ -236,6 +236,25 @@ struct Node *Deletar(struct Node *node, int valor) {
 }
 
 /*=====================================================================
+                            Busca
+======================================================================*/
+
+struct Node *Pesquisar(struct Node *node, int valor){
+if (node == NULL)
+return node;
+
+if (node->info == valor){
+return node;
+}
+else if (valor < node->info){
+return Pesquisar(node->esquerda, valor);
+}
+else{
+return Pesquisar(node->direita, valor);
+}
+}
+
+/*=====================================================================
                             Visualização
 ======================================================================*/
 
@@ -266,6 +285,54 @@ void mostraArvore(struct Node *a, int b) {
 int main() {
     AVL *raizAVL = CriarAVL();
 
+    // No final da main tem um código comentado que roda sem inserção do usuário
+    
+    // Bloco para inserção dos nós na árvore
+    int qntd, valor;
+
+    printf("Digite a quantidade de nós a ser inserido: ");
+    scanf("%i", &qntd);
+
+
+    // Inserção dos valores digitados pelo usuário.
+    for (int i = 0; i < qntd; i++) {
+        printf("Qual o valor do nó n°%i: ", i + 1);
+        scanf("%i", &valor);
+        *raizAVL = Inserir(*raizAVL, valor);
+      }
+
+    printf("\nÁrvore Original:\n\n");
+    mostraArvore(*raizAVL, 0);
+
+    // Bloco para fazer a pesquisa de algum nó na árvore
+    int valorParaBuscar;
+    printf("Qual o valor do nó para ser pesquisado: ");
+    scanf("%i", &valorParaBuscar);
+    struct Node *pesquisado = Pesquisar(*raizAVL, valorParaBuscar);
+
+    if (pesquisado != NULL) {
+        printf("\nValor %d encontrado na árvore!\n", valorParaBuscar);
+    } else {
+        printf("\nValor %d não encontrado na árvore.\n", valorParaBuscar);
+    }
+
+    // Bloco para excluir algum nó da árvore
+    int valorParaDeletar;
+    printf("Qual o valor do nó para ser deletado: ");
+    scanf("%i", &valorParaDeletar);
+
+    struct Node *deletado = Deletar(*raizAVL, valorParaDeletar);
+
+    if (deletado != NULL) {
+        printf("\nValor %d deletado da árvore!\n", valorParaDeletar);
+    } else {
+        printf("\nValor %d não encontrado na árvore.\n", valorParaDeletar);
+    }
+
+    mostraArvore(*raizAVL, 0);
+
+    /*
+
     int vetor[12] = {30, 24, 20, 35, 27, 33, 38, 25, 22, 34, 40, 29};
 
     for (int i = 0; i < 12; i++) {
@@ -275,6 +342,15 @@ int main() {
     printf("\nÁrvore Original:\n\n");
     mostraArvore(*raizAVL, 0);
 
+    int valorParaBuscar = 33;
+    struct Node *resultado = Pesquisar(*raizAVL, valorParaBuscar);
+
+    if (resultado != NULL) {
+        printf("\nValor %d encontrado na árvore!\n", valorParaBuscar);
+    } else {
+        printf("\nValor %d não encontrado na árvore.\n", valorParaBuscar);
+    }
+
     *raizAVL = Deletar(*raizAVL, 30);
 
     printf("\nDepois da remoção do 30:\n\n");
@@ -283,7 +359,7 @@ int main() {
     *raizAVL = Deletar(*raizAVL, 27);
 
     printf("\nDepois da remoção do 27:\n\n");
-    mostraArvore(*raizAVL, 0);
+    mostraArvore(*raizAVL, 0); */
 
     return 0;
 }
