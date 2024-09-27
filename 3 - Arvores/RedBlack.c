@@ -1,3 +1,5 @@
+/*Nome: Matheus Muruci de Souza Lopes*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,6 +17,7 @@ struct Node
 
 typedef struct Node No;
 
+/* Função pra criar um novo nó vermelho com o valor fornecido */
 No *CriarNode(int valor)
 {
     No *novoNo = (No *)malloc(sizeof(No));
@@ -24,6 +27,7 @@ No *CriarNode(int valor)
     return novoNo;
 }
 
+/* Função para fazer a rotação a esquerda*/
 void RotacaoEsquerda(No **raiz, No *noRotacionado)
 {
     No *noAuxiliar = noRotacionado->direita;
@@ -41,6 +45,7 @@ void RotacaoEsquerda(No **raiz, No *noRotacionado)
     noRotacionado->pai = noAuxiliar;
 }
 
+/* Função para fazer a rotação a direita*/
 void RotacaoDireita(No **raiz, No *noRotacionado)
 {
     No *noAuxiliar = noRotacionado->esquerda;
@@ -58,6 +63,7 @@ void RotacaoDireita(No **raiz, No *noRotacionado)
     noRotacionado->pai = noAuxiliar;
 }
 
+/* Função para corrigir a árvore RedBlack após a inserção de um nó */
 void CorrigirViolacao(No **raiz, No *noAjustado)
 {
     while (noAjustado != *raiz && noAjustado->pai->cor == VERMELHO)
@@ -110,6 +116,7 @@ void CorrigirViolacao(No **raiz, No *noAjustado)
     (*raiz)->cor = PRETO;
 }
 
+/* Função para inserir um novo nó na árvore RedBlack */
 void Inserir(No **raiz, int valor)
 {
     No *novoNo = CriarNode(valor);
@@ -135,6 +142,7 @@ void Inserir(No **raiz, int valor)
     CorrigirViolacao(raiz, novoNo);
 }
 
+/* Função para buscar um nó com o valor fornecido na árvore RedBlack */
 No *Buscar(No *raiz, int valor)
 {
     while (raiz != NULL && valor != raiz->valor)
@@ -147,6 +155,7 @@ No *Buscar(No *raiz, int valor)
     return raiz;
 }
 
+/* Encontra o nó com o menor valor(mais a esquerda) da subárvore a direita */
 No *Minimo(No *no)
 {
     while (no->esquerda != NULL)
@@ -154,6 +163,7 @@ No *Minimo(No *no)
     return no;
 }
 
+/* Função para corrigir a árvore RedBlack depois da remoção de um nó */
 void CorrigirRemocao(No **raiz, No *noAjustado)
 {
     while (noAjustado != *raiz && noAjustado->cor == PRETO)
@@ -228,6 +238,7 @@ void CorrigirRemocao(No **raiz, No *noAjustado)
     noAjustado->cor = PRETO;
 }
 
+/* Função para realizar a troca dos nós*/
 void SubstituirNo(No **raiz, No *noOriginal, No *noSubstituto)
 {
     if (noOriginal->pai == NULL)
@@ -240,6 +251,7 @@ void SubstituirNo(No **raiz, No *noOriginal, No *noSubstituto)
         noSubstituto->pai = noOriginal->pai;
 }
 
+/* Função para remover um nó com o valor fornecido da árvore RedBlack */
 void Remover(No **raiz, int valor)
 {
     No *noRemover = Buscar(*raiz, valor);
@@ -299,18 +311,18 @@ void EmOrdem(No *raiz)
     }
 }
 
-void imprimeArvoreRB(No *raiz, int b)
+void ImprimeArvoreRB(No *raiz, int b)
 {
     if (raiz != NULL)
     {
-        imprimeArvoreRB(raiz->direita, b + 1);
+        ImprimeArvoreRB(raiz->direita, b + 1);
         for (int i = 0; i < b; i++)
             printf("       ");
         if (raiz->cor == VERMELHO)
             printf("\033[31m%d\033[0m\n\n", raiz->valor);
         else
             printf("%d\n\n", raiz->valor);
-        imprimeArvoreRB(raiz->esquerda, b + 1);
+        ImprimeArvoreRB(raiz->esquerda, b + 1);
     }
 }
 
@@ -320,15 +332,29 @@ int main()
     int vetor[] = {12, 31, 20, 17, 11, 8, 3, 24, 15, 33};
     int tam = sizeof(vetor) / sizeof(vetor[0]);
 
-    for (int i = 0; i < tam; i++)
+    for (int i = 0; i < tam; i++){
         Inserir(&raiz, vetor[i]);
+    }
+
 
     printf("Árvore Red-Black após inserções:\n");
-    imprimeArvoreRB(raiz, 3);
+    ImprimeArvoreRB(raiz, 3);
+    EmOrdem(raiz);
+    
+    int noBuscado = 8;
+    No *resultadoBusca = Buscar(raiz, noBuscado);
+
+    if (resultadoBusca != NULL){
+        printf("\nValor %d encontrado na árvore!\n", noBuscado);
+    }
+    else{
+        printf("\nValor %d não encontrado na árvore!\n", noBuscado);
+    }
 
     Remover(&raiz, 20);
     printf("\nÁrvore Red-Black após remoção do valor 20:\n");
-    imprimeArvoreRB(raiz, 3);
+    ImprimeArvoreRB(raiz, 3);
+    EmOrdem(raiz);
 
     return 0;
 }
